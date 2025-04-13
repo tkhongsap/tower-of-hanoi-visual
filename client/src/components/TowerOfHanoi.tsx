@@ -23,10 +23,11 @@ export default function TowerOfHanoi() {
     C: []
   };
   
-  const [towers, setTowers] = useState<{ A: number[], B: number[], C: number[] }>(initialTowers);
+  type TowerState = { A: number[], B: number[], C: number[] };
+  const [towers, setTowers] = useState<TowerState>(initialTowers);
 
   // Fetch the solution moves
-  const { data: moves = [], isLoading: isLoadingMoves } = useQuery({
+  const { data: moves = [], isLoading: isLoadingMoves } = useQuery<Move[]>({
     queryKey: [`/api/hanoi/${diskCount}`],
     enabled: true
   });
@@ -47,7 +48,7 @@ export default function TowerOfHanoi() {
 
   // Handle disk count change
   const handleDiskCountChange = (count: number) => {
-    if (count >= 3 && count <= 6) {
+    if (count >= 3 && count <= 10) {
       setDiskCount(count);
       resetVisualization();
       
@@ -74,9 +75,11 @@ export default function TowerOfHanoi() {
     const move = moves[moveIndex];
     setTowers(prev => {
       const newTowers = { ...prev };
-      const disk = newTowers[move.from].pop();
+      const fromRod = move.from as keyof typeof newTowers;
+      const toRod = move.to as keyof typeof newTowers;
+      const disk = newTowers[fromRod].pop();
       if (disk !== undefined) {
-        newTowers[move.to].push(disk);
+        newTowers[toRod].push(disk);
       }
       return newTowers;
     });
@@ -122,7 +125,7 @@ export default function TowerOfHanoi() {
       
       return () => clearTimeout(timeout);
     }
-  }, [isPlaying, currentMoveIndex, moves.length, speed]);
+  }, [isPlaying, currentMoveIndex, moves, speed, executeMove]);
 
   // Cleanup timers on unmount
   React.useEffect(() => {

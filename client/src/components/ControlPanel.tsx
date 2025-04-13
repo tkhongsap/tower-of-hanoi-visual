@@ -62,12 +62,12 @@ export default function ControlPanel({
                 variant="outline"
                 size="icon"
                 onClick={() => onDiskCountChange(diskCount + 1)}
-                disabled={diskCount >= 6 || isPlaying}
+                disabled={diskCount >= 10 || isPlaying}
               >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            <div className="mt-1 text-xs text-slate-500">Select between 3-6 disks</div>
+            <div className="mt-1 text-xs text-slate-500">Select between 3-10 disks</div>
           </div>
           
           {/* Speed Control */}
