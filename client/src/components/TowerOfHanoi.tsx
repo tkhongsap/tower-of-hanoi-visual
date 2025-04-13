@@ -16,15 +16,22 @@ export default function TowerOfHanoi() {
   const [timer, setTimer] = useState<number | null>(null);
   const { toast } = useToast();
 
-  // Initial tower state
-  const initialTowers = {
-    A: Array.from({ length: diskCount }, (_, i) => diskCount - i),
+  type TowerState = { A: number[], B: number[], C: number[] };
+  
+  // Function to generate initial tower state based on disk count
+  const generateInitialTowers = (count: number): TowerState => ({
+    A: Array.from({ length: count }, (_, i) => count - i),
     B: [],
     C: []
-  };
+  });
   
-  type TowerState = { A: number[], B: number[], C: number[] };
-  const [towers, setTowers] = useState<TowerState>(initialTowers);
+  // Initialize towers state
+  const [towers, setTowers] = useState<TowerState>(generateInitialTowers(diskCount));
+  
+  // Update towers when disk count changes
+  React.useEffect(() => {
+    setTowers(generateInitialTowers(diskCount));
+  }, [diskCount]);
 
   // Fetch the solution moves
   const { data: moves = [], isLoading: isLoadingMoves } = useQuery<Move[]>({
@@ -37,7 +44,7 @@ export default function TowerOfHanoi() {
     setCurrentMoveIndex(0);
     setElapsedTime(0);
     setIsPlaying(false);
-    setTowers(initialTowers);
+    setTowers(generateInitialTowers(diskCount));
     
     // Clear any existing timer
     if (timer) {
@@ -49,11 +56,12 @@ export default function TowerOfHanoi() {
   // Handle disk count change
   const handleDiskCountChange = (count: number) => {
     if (count >= 3 && count <= 10) {
+      // First invalidate the query for the new disk count to trigger a fetch
+      queryClient.invalidateQueries({ queryKey: [`/api/hanoi/${count}`] });
+      
+      // Then update the state
       setDiskCount(count);
       resetVisualization();
-      
-      // Invalidate the current query to fetch new moves
-      queryClient.invalidateQueries({ queryKey: [`/api/hanoi/${diskCount}`] });
     }
   };
 
