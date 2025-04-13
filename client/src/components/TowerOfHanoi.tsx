@@ -58,7 +58,7 @@ export default function TowerOfHanoi() {
   };
 
   // Execute a move
-  const executeMove = (moveIndex: number) => {
+  const executeMove = React.useCallback((moveIndex: number) => {
     if (moveIndex >= moves.length) {
       setIsPlaying(false);
       if (timer) {
@@ -85,7 +85,7 @@ export default function TowerOfHanoi() {
     });
     
     setCurrentMoveIndex(moveIndex + 1);
-  };
+  }, [moves, timer, diskCount, toast]);
 
   // Start solving animation
   const startSolving = () => {
