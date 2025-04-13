@@ -26,7 +26,7 @@ export const solutionHistory = pgTable("solution_history", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id),
   diskCount: integer("disk_count").notNull(),
-  moves: json("moves").$type<Move[]>().notNull(),
+  moves: json("moves").notNull(),
   timeToSolve: integer("time_to_solve"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

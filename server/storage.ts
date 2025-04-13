@@ -77,7 +77,15 @@ export class DatabaseStorage implements IStorage {
   }
   
   async createSolutionHistory(history: InsertSolutionHistory): Promise<SolutionHistory> {
-    const [newHistory] = await db.insert(solutionHistory).values(history).returning();
+    // For PostgreSQL JSON columns, we need to properly stringify and parse the data
+    const historyData = {
+      diskCount: history.diskCount,
+      userId: history.userId,
+      timeToSolve: history.timeToSolve,
+      moves: JSON.stringify(history.moves)
+    };
+    
+    const [newHistory] = await db.insert(solutionHistory).values(historyData).returning();
     return newHistory;
   }
   
